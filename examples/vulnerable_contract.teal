@@ -1,0 +1,54 @@
+#pragma version 6
+// Vulnerable TEAL contract for testing P0 rules
+
+txn ApplicationID
+int 0
+==
+bnz create
+
+txn OnCompletion
+int DeleteApplication
+==
+bnz delete_app
+
+txn OnCompletion
+int UpdateApplication
+==
+bnz update_app
+
+txn OnCompletion
+int NoOp
+==
+bnz call_app
+
+int 0
+return
+
+create:
+int 1
+return
+
+// VIOLATION: DELETE_WITHOUT_ADMIN_CHECK - no sender validation
+delete_app:
+byte "owner"
+app_global_del
+int 1
+return
+
+// VIOLATION: UPDATE_WITHOUT_ADMIN_CHECK - no authorization
+update_app:
+byte "version"
+txn ApplicationArgs 0
+app_global_put
+int 1
+return
+
+// VIOLATION: MISSING_ARG_VALIDATION, STATE_MUTATION_UNGUARDED
+call_app:
+byte "balance"
+txn ApplicationArgs 0
+btoi
+app_global_put
+// VIOLATION: REKEY_NOT_ZERO - no RekeyTo check
+int 1
+return

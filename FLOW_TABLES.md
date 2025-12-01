@@ -4,35 +4,20 @@ This document captures end-to-end flows across the User UI, SDK, CLI, Backend, a
 
 ---
 
-## v1 (Day 1–3): Static Analysis (Algorand Baseline + PCI-DSS)
+## v1 (Day 1–3): P0 — Scan → Verdict → Anchor
 
 | Step | User action | SDK (local) | CLI | Backend API | On-chain | Output / UX |
 |---|---|---|---|---|---|---|
-| 1 | Choose policy pack(s) | `ComplianceChecker(policy_pack="algorand-baseline" or "pci-dss-algorand")` | `compliledger list-policies` | N/A | N/A | Shows available packs + rule counts |
-| 2 | Run analysis on file/dir | `checker.check_file(...)` or `check_directory(...)` | `compliledger check contracts/ --policy algorand-baseline,pci-dss-algorand --threshold 80` | N/A | N/A | Starts analysis with selected policies |
-| 3 | Parse source | PyTeal AST + TEAL regex parsing | Same via CLI | N/A | N/A | Extracts functions, asserts, state ops, tx usage |
-| 4 | Apply rules | Baseline + PCI checks (sender check, amount validation, state guards, rekey, logging, asset safety, box size, limits, refunds, audit logs) | Same via CLI | N/A | N/A | Violations collected per rule with severity |
-| 5 | Compute score | Severity-weighted scoring (0–100) | Same via CLI | N/A | N/A | Score + pass/fail vs threshold |
-| 6 | View results | Python objects (violations, score, counts) | Rich terminal summary | N/A | N/A | Grouped by severity with remediation hints |
-| 7 | Export report | `checker.generate_report(..., format="html|markdown|json")` | `compliledger report contracts/ --format html -o report.html` | N/A | N/A | HTML/MD/JSON reports for sharing |
-| 8 | Iterate/fix | Update code, re-run | `compliledger check ... --fail-on-critical` | N/A | N/A | CI-friendly exit codes |
-| 9 | Optional watch | N/A | `compliledger watch contracts/` | N/A | N/A | Auto re-check on file changes |
-| 10 | Interactive (optional) | N/A | `compliledger analyze --interactive` | N/A | N/A | Menu: Quick Check, export, policy view |
-
----
-
-## v1 (Day 6+): Proof Anchoring & Verification
-
-| Step | User action | SDK (local) | CLI | Backend API | On-chain (Algorand) | Output / UX |
-|---|---|---|---|---|---|---|
-| 1 | Create compliance event | `client.create_compliance_event(...)` | `compliledger anchor --framework SOC2 --control CC6.1 --status pass` | `POST /v1/events` (optional) | — | Event JSON + canonical preview |
-| 2 | Canonicalize + hash | `event.compute_hash()` (SHA-256) | CLI uses SDK | — | — | Stable `event_hash` |
-| 3A | Prepare user-signed tx | `mint_proof()` prepares note & submits | `compliledger anchor ...` | `POST /v1/events/:id/prepare-tx` → txn bytes | — | Wallet prompt |
-| 3B | Service-signed (CI) | Optional: — | `compliledger anchor --service-signed` | `POST /v1/events/:id/anchor` | Broadcast via service wallet | Lower friction CI |
-| 4 | Submit & confirm | Wait 3–4 rounds | Spinner + status | `GET /v1/proofs/:txid` polling | PaymentTxn self-send, `note=b"CLG1|sha256:<hex>"` | TXID + explorer link |
-| 5 | Verify proof | `verify_proof(event, txid)` | `compliledger verify --txid ... --event event.json` | `POST /v1/verify` | Indexer lookup, base64 decode note | Valid/Invalid + timestamp |
-| 6 | History | — | `compliledger query --address ...` | `GET /v1/wallets/:addr/proofs` | Indexer aggregation | Paginated proofs |
-| 7 | Reports | — | `compliledger report ...` | `POST /v1/reports` | — | Audit-ready HTML/MD/JSON |
+| 1 | Choose policy pack(s) | `ComplianceChecker(policy_pack="algorand-baseline" or "pci-dss-algorand")` | `compliledger list-policies` | — | — | Shows available packs + rule counts |
+| 2 | Run analysis on file/dir | `checker.check_file(...)` or `check_directory(...)` | `compliledger check contracts/ --policy algorand-baseline,pci-dss-algorand --threshold 80` | — | — | Starts analysis with selected policies |
+| 3 | Parse source | PyTeal AST + TEAL regex parsing | Same via CLI | — | — | Extracts functions, asserts, state ops, tx usage |
+| 4 | Apply rules | P0 rule engine (Application/Account/Fee/Asset/Logic) | Same via CLI | — | — | Violations with severity + control mapping |
+| 5 | Build verdict | `verdict.build(...)` (framework, control_id, status, rules_triggered, severity, contract, timestamp) | `compliledger report ...` to preview | — | — | Compliance Verdict Object (deterministic JSON) |
+| 6 | Anchor verdict | `client.mint_proof(verdict)` → hash → txn note | `compliledger anchor --verdict verdict.json` | `POST /v1/events` (optional) | PaymentTxn self-send, `note=b"CLG1|sha256:<hex>"` | TXID + explorer URL |
+| 7 | Verify | `client.verify_proof(verdict, txid)` | `compliledger verify --txid ... --verdict verdict.json` | `POST /v1/verify` | Indexer lookup & note decode | Valid/Invalid + block time |
+| 8 | Export report | `report(..., format="html|markdown|json")` | `compliledger report ... -o report.html` | — | — | Audit-ready report + rule matches |
+| 9 | Optional watch | — | `compliledger watch contracts/` | — | — | Auto re-check on save |
+| 10 | Interactive (optional) | — | `compliledger analyze --interactive` | — | — | Quick Check → if pass/waived → Anchor |
 
 ---
 

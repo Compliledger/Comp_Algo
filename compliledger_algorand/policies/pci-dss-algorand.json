@@ -1,0 +1,11 @@
+{
+  "id": "pci-dss-algorand",
+  "name": "PCI-DSS for Algorand (P0)",
+  "description": "P0 subset of PCI-DSS oriented rules for Algorand",
+  "version": "0.1.0",
+  "enabled_rules": [
+    "MISSING_ARG_VALIDATION",
+    "INNER_TXN_UNGUARDED",
+    "EXCESSIVE_FEE_UNBOUNDED"
+  ]
+}

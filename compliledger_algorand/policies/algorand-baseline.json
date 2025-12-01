@@ -1,0 +1,17 @@
+{
+  "id": "algorand-baseline",
+  "name": "Algorand Baseline",
+  "description": "P0 baseline rules for Algorand PyTeal/TEAL projects",
+  "version": "0.1.0",
+  "enabled_rules": [
+    "DELETE_WITHOUT_ADMIN_CHECK",
+    "UPDATE_WITHOUT_ADMIN_CHECK",
+    "MISSING_ADMIN_SENDER_CHECK",
+    "REKEY_NOT_ZERO",
+    "CLOSEREMAINDER_NOT_ZERO",
+    "MISSING_ARG_VALIDATION",
+    "STATE_MUTATION_UNGUARDED",
+    "INNER_TXN_UNGUARDED",
+    "EXCESSIVE_FEE_UNBOUNDED"
+  ]
+}
