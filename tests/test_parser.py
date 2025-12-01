@@ -19,8 +19,8 @@ def app():
         [Txn.on_completion() == OnComplete.DeleteApplication, on_delete]
     )
 '''
-    parser = PyTealParser(code)
-    signals = parser.extract_signals()
+    parser = PyTealParser()
+    signals = parser.extract_signals(code)
     assert "has_delete_application" in signals
     assert signals["has_delete_application"] is True
     assert "has_global_del" in signals

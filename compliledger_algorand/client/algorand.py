@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from algosdk.v2client import algod
-from algosdk import transaction, mnemonic
+from algosdk import transaction, mnemonic, account
 
 
 @dataclass
@@ -28,7 +28,7 @@ class AlgorandClient:
 
     def send_note_tx(self, sender_mnemonic: str, note_text: str) -> str:
         sender_sk = mnemonic.to_private_key(sender_mnemonic)
-        sender_addr = mnemonic.to_public_key(sender_mnemonic)
+        sender_addr = account.address_from_private_key(sender_sk)
         params = self.algod.suggested_params()
         params.flat_fee = True
         params.fee = max(params.min_fee, 1000)

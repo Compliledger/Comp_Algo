@@ -98,28 +98,40 @@ class ComplianceChecker:
     def _check_signals(self, file_path: str, signals: Dict[str, Any]) -> List[Dict[str, Any]]:
         v: List[Dict[str, Any]] = []
         enabled = set(self.enabled_rules)
-        has_admin = signals.get("has_admin_sender_assert", False)
+        has_admin = signals.get("has_sender_check", False) or signals.get("has_admin_sender_assert", False)
+        has_delete = signals.get("has_delete_application", False) or signals.get("uses_delete", False)
+        has_update = signals.get("has_update_application", False) or signals.get("uses_update", False)
+        has_global_put = signals.get("has_global_put", False) or signals.get("uses_global_put", False)
+        has_local_put = signals.get("has_local_put", False) or signals.get("uses_local_put", False)
+        has_box_ops = signals.get("has_box_ops", False) or signals.get("uses_box_ops", False)
+        has_rekey_check = signals.get("has_rekey_to_check", False) or signals.get("has_rekey_zero_assert", False)
+        has_close_check = signals.get("has_close_check", False) or signals.get("has_close_zero_assert", False)
+        has_inner_txn = signals.get("has_inner_txn", False) or signals.get("uses_inner_txn", False)
+        has_fee_check = signals.get("has_fee_check", False) or signals.get("has_fee_bound_assert", False)
+        has_arg_use = signals.get("has_arg_validation", False) or signals.get("uses_btoi_args", False)
+        has_assert = signals.get("has_assert", False)
+        
         # Application lifecycle
-        if signals.get("uses_delete") and DELETE_WITHOUT_ADMIN_CHECK in enabled and not has_admin:
+        if has_delete and DELETE_WITHOUT_ADMIN_CHECK in enabled and not has_admin:
             v.append(self._violation(DELETE_WITHOUT_ADMIN_CHECK, file_path, "DeleteApplication without admin sender check"))
-        if signals.get("uses_update") and UPDATE_WITHOUT_ADMIN_CHECK in enabled and not has_admin:
+        if has_update and UPDATE_WITHOUT_ADMIN_CHECK in enabled and not has_admin:
             v.append(self._violation(UPDATE_WITHOUT_ADMIN_CHECK, file_path, "UpdateApplication without admin sender check"))
         # Global admin check for state mutation
-        if (signals.get("uses_global_put") or signals.get("uses_local_put") or signals.get("uses_box_ops")) and MISSING_ADMIN_SENDER_CHECK in enabled and not has_admin:
+        if (has_global_put or has_local_put or has_box_ops) and MISSING_ADMIN_SENDER_CHECK in enabled and not has_admin:
             v.append(self._violation(MISSING_ADMIN_SENDER_CHECK, file_path, "State mutation without admin sender check"))
         # Account controls
-        if REKEY_NOT_ZERO in enabled and not signals.get("has_rekey_zero_assert"):
+        if REKEY_NOT_ZERO in enabled and not has_rekey_check:
             v.append(self._violation(REKEY_NOT_ZERO, file_path, "Missing assert: Txn.rekey_to() == Global.zero_address()"))
-        if CLOSEREMAINDER_NOT_ZERO in enabled and not signals.get("has_close_zero_assert"):
+        if CLOSEREMAINDER_NOT_ZERO in enabled and not has_close_check:
             v.append(self._violation(CLOSEREMAINDER_NOT_ZERO, file_path, "Missing assert: Txn.close_remainder_to() == Global.zero_address()"))
         # Args validation
-        if MISSING_ARG_VALIDATION in enabled and signals.get("uses_btoi_args") and not signals.get("has_assert"):
+        if MISSING_ARG_VALIDATION in enabled and has_arg_use and not has_assert:
             v.append(self._violation(MISSING_ARG_VALIDATION, file_path, "Application args used without assertions/validation"))
         # Inner txn safety
-        if INNER_TXN_UNGUARDED in enabled and signals.get("uses_inner_txn") and not signals.get("has_assert"):
+        if INNER_TXN_UNGUARDED in enabled and has_inner_txn and not has_assert:
             v.append(self._violation(INNER_TXN_UNGUARDED, file_path, "Inner transactions present without assertions/limits"))
         # Fee bounds
-        if EXCESSIVE_FEE_UNBOUNDED in enabled and not signals.get("has_fee_bound_assert"):
+        if EXCESSIVE_FEE_UNBOUNDED in enabled and not has_fee_check:
             v.append(self._violation(EXCESSIVE_FEE_UNBOUNDED, file_path, "No fee upper-bound assertion (Txn.fee() <= Int(N))"))
         return v
 
