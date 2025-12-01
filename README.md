@@ -1,6 +1,6 @@
-# 🔒 CompliLedger SDK – Algorand Edition
+# 🔒 CompALGO – Algorand Smart Contract Compliance Analyzer
 
-**Proof-of-Compliance & Smart Contract Security for Algorand**
+**Static Analysis + On-Chain Proof Anchoring for Algorand Smart Contracts**
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -10,15 +10,24 @@
 
 ---
 
-## 🎯 Dual-Purpose Compliance SDK
+## 🎯 What is CompALGO?
 
-CompliLedger for Algorand provides **two powerful capabilities**:
+CompALGO is a comprehensive compliance and security toolkit for Algorand smart contracts that provides **two powerful capabilities**:
 
-### 1. 🔐 Compliance Proof Anchoring
-Create cryptographically verifiable attestations anchored immutably on Algorand blockchain.
+### 1. 🛡️ Smart Contract Security Analysis
+Analyze PyTeal and TEAL contracts for vulnerabilities and compliance issues during development with **8 policy packs** covering PCI-DSS, SOC2, and security best practices.
 
-### 2. 🛡️ Smart Contract Security Analysis
-Analyze PyTeal and TEAL contracts for vulnerabilities and compliance issues during development.
+### 2. 🔐 Compliance Proof Anchoring
+Create cryptographically verifiable compliance verdicts and anchor them immutably on the Algorand blockchain for audit trails and regulatory evidence.
+
+---
+
+## 📚 Documentation
+
+- **[CLI User Flows & Examples](CLI_USER_FLOWS.md)** - Complete guide with step-by-step workflows
+- **[Security Rules Reference](SECURITY_RULES.md)** - All P0 rules and detection logic
+- **[Quick Start Guide](QUICKSTART.md)** - Get started in 5 minutes
+- **[10-Day Development Plan](DEV_10_DAY_PLAN.md)** - Roadmap and architecture
 
 ---
 
@@ -59,69 +68,105 @@ Algorand is not just storage — **it's the trust layer for CompliLedger**.
 ## 📦 Installation
 
 ```bash
-pip install compliledger-algorand
+# Install CompALGO
+pip install compalgo
 
 # With interactive menu mode
-pip install compliledger-algorand[interactive]
+pip install compalgo[interactive]
 
 # With file watching (auto-check on save)
-pip install compliledger-algorand[watch]
+pip install compalgo[watch]
 
-# Full install
-pip install compliledger-algorand[all]
+# Development install
+git clone https://github.com/compliledger/compalgo.git
+cd compalgo
+pip install -e .
 ```
 
 ---
 
 ## 🎬 Quickstart
 
-### Part 1: Anchor Compliance Proofs
+### 1️⃣ Scan a Contract
+
+```bash
+# Quick security scan with default policy
+compalgo check examples/escrow.py
+
+# Scan with specific policy and threshold
+compalgo check contracts/payment.py --policy pci-dss-standard --threshold 90
+
+# Scan entire directory
+compalgo check contracts/
+```
+
+### 2️⃣ Generate Compliance Verdict
+
+```bash
+# Scan and create verdict JSON
+compalgo check examples/escrow.py --verdict-out verdict.json
+
+# View all available policies
+compalgo list-policies
+```
+
+### 3️⃣ Anchor Proof on Algorand
+
+```bash
+# Set your Algorand account (testnet)
+export ALGO_MNEMONIC="your 25 word mnemonic here"
+
+# Anchor the verdict hash on Algorand blockchain
+compalgo anchor --verdict verdict.json
+
+# Output:
+# ✅ Anchored! TXID: CTOE5M6ZZD...
+# Explorer: https://testnet.algoexplorer.io/tx/CTOE5M6ZZD...
+```
+
+### 4️⃣ Verify Proof
+
+```bash
+# Verify verdict against blockchain
+compalgo verify --verdict verdict.json --txid CTOE5M6ZZD...
+
+# Output:
+# ✅ VALID
+```
+
+### 5️⃣ Python API
 
 ```python
-from compliledger_algorand import CompliLedgerClient
+from compalgo import ComplianceChecker, CompliLedgerClient
+from compalgo.core.verdict import build_verdict
 
+# Scan contract
+checker = ComplianceChecker(policy_pack="algorand-baseline", threshold=80)
+result = checker.check_file("contract.py")
+
+# Build compliance verdict
+verdict = build_verdict(
+    contract=result.file_path,
+    violations=result.violations,
+    framework="SOC2",
+    control_id="CC6.1",
+    fail_on="medium"
+)
+
+# Anchor on Algorand
 client = CompliLedgerClient(
     algod_url="https://testnet-api.algonode.cloud",
     algod_token="",
-    sender_mnemonic="your 25-word mnemonic",
+    sender_mnemonic="your mnemonic",
     network="testnet"
 )
+anchor_result = client.mint_verdict(verdict)
+print(f"TXID: {anchor_result.txid}")
+print(f"Explorer: {anchor_result.explorer_url}")
 
-# Create compliance event
-event = client.create_compliance_event(
-    framework="SOC2",
-    control_id="CC6.1",
-    status="pass",
-    resource="auth-service",
-    details={"checked_by": "ci-pipeline"}
-)
-
-# Mint proof on Algorand
-proof = client.mint_proof(event)
-
-print(f"✅ Proof anchored!")
-print(f"📍 TXID: {proof.txid}")
-print(f"🔗 Explorer: {proof.explorer_url}")
-print(f"🔐 Hash: {proof.event_hash}")
-
-# Verify proof
-assert client.verify_proof(event, proof.txid)
-```
-
-### Part 2: Analyze Smart Contract Security
-
-```bash
-# Interactive mode (recommended)
-compliledger analyze --interactive
-
-# Quick check
-compliledger check contracts/payment.py
-
-# Check directory with threshold
-compliledger check contracts/ --threshold 80 --fail-on-critical
-
-# Generate HTML report
-compliledger report contracts/ --format html -o report.html
+# Verify
+is_valid = client.verify_verdict(verdict, anchor_result.txid)
+assert is_valid  # ✅ True
 ```
 
 ---
@@ -137,112 +182,137 @@ compliledger report contracts/ --format html -o report.html
 
 ---
 
-## 💻 CLI Commands
+## 💻 CLI Commands & User Flows
 
-### Proof Anchoring
+CompALGO provides a comprehensive CLI for all workflows. See **[CLI_USER_FLOWS.md](CLI_USER_FLOWS.md)** for complete examples.
 
-```bash
-# Anchor compliance event
-compliledger anchor --framework SOC2 --control CC6.1 --status pass
-
-# Verify proof
-compliledger verify --txid <TRANSACTION_ID>
-
-# Query proofs
-compliledger query --framework SOC2 --from-date 2025-01-01
-
-# Export history
-compliledger export --format csv -o compliance_history.csv
-```
-
-### Smart Contract Analysis
+### Quick Reference
 
 ```bash
-# Interactive menu
-compliledger analyze --interactive
+# Scan contracts
+compalgo check contract.py                    # Quick scan
+compalgo check contracts/ --policy pci-dss-standard  # Directory scan
+compalgo check contract.py --threshold 95      # Custom threshold
+compalgo check contract.py --verdict-out v.json  # Generate verdict
 
-# Check file/directory
-compliledger check contracts/payment.py
-compliledger check contracts/ --fail-on-high
+# Export reports
+compalgo report contract.py -o report.json --format json
+compalgo report contract.py -o report.md --format markdown
+compalgo report contract.py -o report.html --format html
 
-# Generate reports
-compliledger report contracts/ --format html -o report.html
-compliledger report contracts/ --format markdown -o SECURITY.md
+# Policy management
+compalgo list-policies                        # Show all policies
 
-# CI/CD integration
-compliledger init-ci
+# Blockchain anchoring
+export ALGO_MNEMONIC="your 25 word mnemonic"
+compalgo anchor --verdict verdict.json        # Anchor on testnet
+compalgo anchor --verdict v.json --network mainnet  # Anchor on mainnet
 
-# Watch mode
-compliledger watch contracts/
-
-# List policies
-compliledger list-policies
+# Verification
+compalgo verify --verdict verdict.json --txid TXID  # Verify proof
 ```
+
+### Available User Flows
+
+1. **Quick Analysis Flow** - Fast security scan
+2. **Full Compliance Flow** - Check → Anchor → Verify
+3. **Multi-File Analysis** - Scan entire projects
+4. **Policy Comparison** - Test multiple policies
+5. **Report Generation** - Export JSON/HTML/Markdown
+6. **CI/CD Integration** - GitHub Actions, GitLab CI
+7. **Audit & Verification** - Independent proof verification
+
+👉 **See [CLI_USER_FLOWS.md](CLI_USER_FLOWS.md) for complete step-by-step examples**
+
+### Available Policy Packs
+
+Run `compalgo list-policies` to see all 8 available policy packs:
+
+| Policy Pack | Rules | Threshold | Target |
+|-------------|-------|-----------|--------|
+| **algorand-baseline** | 9 | 80 | General Algorand contracts |
+| **pci-dss-basic** | 7 | 85 | Payment/DeFi (essential) |
+| **pci-dss-standard** | 15 | 90 | Payment/DeFi (comprehensive) |
+| **pci-secure-software** | 7 | 90 | Software vendors |
+| **pci-tokenization** | 4 | 90 | Token service providers |
+| **aleo-baseline** | 10 | 75 | General security patterns |
+| **pci-dss-algorand** | 3 | 80 | Algorand payment subset |
 
 ---
 
-## 🎨 Interactive Mode
+## 🔐 Compliance Verdict Examples
 
-```bash
-compliledger analyze --interactive
-```
-
-**Features:**
-- 🔍 Auto-scans for PyTeal (.py) and TEAL (.teal) files
-- 📋 Quick access to recent files
-- ⌨️ Navigate with arrow keys
-- 🔄 Rescan on demand
-- 📊 Detailed violation reports
-- 💾 Export to multiple formats
-
----
-
-## 🔐 Framework Examples
-
-### SOC 2 Compliance
+### PCI DSS Payment Contract Analysis
 
 ```python
-event = client.create_compliance_event(
-    framework="SOC2",
-    control_id="CC6.1",  # Logical Access Controls
-    status="pass",
-    resource="auth-service",
-    details={"mfa_enabled": True}
-)
-proof = client.mint_proof(event)
-```
+from compalgo import ComplianceChecker, CompliLedgerClient
+from compalgo.core.verdict import build_verdict
 
-### PCI DSS Payment Security
-
-```python
-# Anchor compliance event
-event = client.create_compliance_event(
-    framework="PCI",
-    control_id="REQ_10",  # Track and Monitor Access
-    status="pass",
-    resource="payment-api"
-)
-
-# Check smart contract for PCI compliance
-from compliledger_algorand.analyzer import ComplianceChecker
-
-checker = ComplianceChecker(policy_pack="pci-dss-algorand")
+# Scan payment contract with PCI-DSS Standard policy
+checker = ComplianceChecker(policy_pack="pci-dss-standard", threshold=90)
 result = checker.check_file("contracts/payment_app.py")
 
-if result.score >= 85:
-    proof = client.mint_proof(event)
+print(f"Score: {result.score}/100")
+print(f"Violations: {len(result.violations)}")
+
+# Build compliance verdict
+verdict = build_verdict(
+    contract=result.file_path,
+    violations=result.violations,
+    framework="PCI-DSS",
+    control_id="6.5.1",
+    fail_on="high"
+)
+
+# If compliant, anchor proof on Algorand
+if result.passed:
+    client = CompliLedgerClient(
+        algod_url="https://testnet-api.algonode.cloud",
+        algod_token="",
+        sender_mnemonic=os.getenv("ALGO_MNEMONIC"),
+        network="testnet"
+    )
+    anchor_result = client.mint_verdict(verdict)
+    print(f"✅ Proof anchored: {anchor_result.explorer_url}")
 ```
 
-### FedRAMP Cloud Security
+### SOC 2 Access Control Verification
 
 ```python
-event = client.create_compliance_event(
-    framework="FedRAMP",
-    control_id="AC-2",  # Account Management
-    status="pass",
-    resource="cloud-console"
+from compalgo import ComplianceChecker
+from compalgo.core.verdict import build_verdict
+
+# Check contract for SOC 2 compliance (access controls)
+checker = ComplianceChecker(policy_pack="algorand-baseline", threshold=80)
+result = checker.check_file("contracts/auth_contract.py")
+
+# Build SOC 2 verdict
+verdict = build_verdict(
+    contract=result.file_path,
+    violations=result.violations,
+    framework="SOC2",
+    control_id="CC6.1",  # Logical and Physical Access Controls
+    fail_on="medium"
 )
-proof = client.mint_proof(event)
+
+# Verdict includes: status, severity, rules_triggered, timestamp
+print(f"Status: {verdict.status}")
+print(f"Severity: {verdict.severity}")
+print(f"Rules triggered: {verdict.rules_triggered}")
+```
+
+### Multi-Policy Comparison
+
+```python
+from compalgo import ComplianceChecker
+
+policies = ["algorand-baseline", "pci-dss-basic", "pci-dss-standard"]
+contract = "contracts/payment.py"
+
+for policy in policies:
+    checker = ComplianceChecker(policy_pack=policy)
+    result = checker.check_file(contract)
+    print(f"{policy}: Score={result.score}, Passed={result.passed}")
 ```
 
 ---
