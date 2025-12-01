@@ -1,0 +1,17 @@
+{
+  "framework": "SOC2",
+  "control_id": "CC6.1",
+  "status": "fail",
+  "contract": "examples\\vulnerable_escrow.py",
+  "rules_triggered": [
+    "CLOSEREMAINDER_NOT_ZERO",
+    "DELETE_WITHOUT_ADMIN_CHECK",
+    "EXCESSIVE_FEE_UNBOUNDED",
+    "MISSING_ADMIN_SENDER_CHECK",
+    "MISSING_ARG_VALIDATION",
+    "REKEY_NOT_ZERO",
+    "UPDATE_WITHOUT_ADMIN_CHECK"
+  ],
+  "severity": "critical",
+  "timestamp": "2025-12-01T19:10:40.346775+00:00"
+}

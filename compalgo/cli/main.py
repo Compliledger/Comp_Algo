@@ -13,6 +13,7 @@ from rich.table import Table
 from ..analyzer.checker import ComplianceChecker
 from ..core.verdict import build_verdict, ComplianceVerdict
 from ..client import CompliLedgerClient
+from ..config import AlgoConfig
 
 console = Console()
 
@@ -86,13 +87,8 @@ def check(path: str, policy: str, threshold: int, verdict_out: Optional[str]):
                 if v.get("controls"):
                     console.print(f"  Controls: {', '.join([c['framework']+':'+c['control_id'] for c in v['controls']])}")
 
-    if failed:
-        console.print(f"[red]Failed {failed}/{total_files} file(s)[/red]")
-        sys.exit(1)
-    else:
-        console.print("[green]All files passed threshold[/green]")
-
     # Optional: generate Compliance Verdict JSON for single file run
+    # (Do this BEFORE exiting so verdict is created even on failure)
     if verdict_out:
         if os.path.isdir(path):
             console.print("[red]--verdict-out is only supported when PATH is a single file[/red]")
@@ -117,6 +113,13 @@ def check(path: str, policy: str, threshold: int, verdict_out: Optional[str]):
         )
         _save_text(verdict_out, json.dumps(verdict.model_dump(), indent=2))
         console.print(f"[green]Verdict written:[/green] {verdict_out}")
+
+    # Print final summary and exit with appropriate code
+    if failed:
+        console.print(f"[red]Failed {failed}/{total_files} file(s)[/red]")
+        sys.exit(1)
+    else:
+        console.print("[green]All files passed threshold[/green]")
 
 
 @cli.command()
@@ -175,28 +178,89 @@ def list_policies():
 
 @cli.command()
 @click.option("--verdict", "verdict_path", type=click.Path(exists=True), required=True, help="Path to Compliance Verdict JSON")
-@click.option("--network", default="testnet", type=click.Choice(["testnet", "mainnet"]))
-@click.option("--algod-url", envvar="ALGO_URL", default="https://testnet-api.algonode.cloud")
-@click.option("--algod-token", envvar="ALGO_TOKEN", default="")
-@click.option("--mnemonic", envvar="ALGO_MNEMONIC", required=True)
-def anchor(verdict_path: str, network: str, algod_url: str, algod_token: str, mnemonic: str):
+@click.option("--network", default=None, type=click.Choice(["testnet", "mainnet"]), help="Network (defaults to .env ALGO_NETWORK)")
+@click.option("--algod-url", default=None, help="Algod URL (defaults to .env ALGOD_URL)")
+@click.option("--algod-token", default=None, help="Algod token (defaults to .env ALGOD_TOKEN)")
+@click.option("--mnemonic", default=None, help="25-word mnemonic (defaults to .env ALGO_MNEMONIC)")
+def anchor(verdict_path: str, network: Optional[str], algod_url: Optional[str], algod_token: Optional[str], mnemonic: Optional[str]):
+    """Anchor a Compliance Verdict on Algorand blockchain.
+    
+    Loads configuration from .env file by default. CLI options override .env values.
+    
+    Example:
+        compalgo anchor --verdict verdict.json
+    """
     v = _load_json(verdict_path)
-    client = CompliLedgerClient(algod_url=algod_url, algod_token=algod_token, sender_mnemonic=mnemonic, network=network)
+    
+    # Load config from .env and override with CLI args if provided
+    config = AlgoConfig(
+        mnemonic=mnemonic,
+        algod_url=algod_url,
+        algod_token=algod_token,
+        network=network,
+    )
+    
+    try:
+        config.validate(require_mnemonic=True)
+    except ValueError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        console.print("\n[yellow]Tip:[/yellow] Create a .env file with ALGO_MNEMONIC or use --mnemonic option")
+        sys.exit(1)
+    
+    client = CompliLedgerClient(
+        algod_url=config.algod_url,
+        algod_token=config.algod_token,
+        sender_mnemonic=config.mnemonic,
+        network=config.network,
+        indexer_url=config.indexer_url,
+        indexer_token=config.indexer_token,
+    )
+    
     res = client.mint_verdict(v)
     console.print(f"[green]Anchored![/green] TXID: {res.txid}")
     console.print(f"Explorer: {res.explorer_url}")
 
 
 @cli.command()
-@click.option("--verdict", "verdict_path", type=click.Path(exists=True), required=True)
-@click.option("--txid", required=True)
-@click.option("--network", default="testnet", type=click.Choice(["testnet", "mainnet"]))
-@click.option("--algod-url", envvar="ALGO_URL", default="https://testnet-api.algonode.cloud")
-@click.option("--algod-token", envvar="ALGO_TOKEN", default="")
-def verify(verdict_path: str, txid: str, network: str, algod_url: str, algod_token: str):
+@click.option("--verdict", "verdict_path", type=click.Path(exists=True), required=True, help="Path to Compliance Verdict JSON")
+@click.option("--txid", required=True, help="Transaction ID to verify against")
+@click.option("--network", default=None, type=click.Choice(["testnet", "mainnet"]), help="Network (defaults to .env ALGO_NETWORK)")
+@click.option("--algod-url", default=None, help="Algod URL (defaults to .env ALGOD_URL)")
+@click.option("--indexer-url", default=None, help="Indexer URL (defaults to .env INDEXER_URL)")
+def verify(verdict_path: str, txid: str, network: Optional[str], algod_url: Optional[str], indexer_url: Optional[str]):
+    """Verify a Compliance Verdict against an on-chain transaction.
+    
+    Loads configuration from .env file by default. CLI options override .env values.
+    No mnemonic required for verification.
+    
+    Example:
+        compalgo verify --verdict verdict.json --txid CTOE5M6ZZD...
+    """
     v = _load_json(verdict_path)
-    # mnemonic not required to verify
-    client = CompliLedgerClient(algod_url=algod_url, algod_token=algod_token, sender_mnemonic=os.getenv("ALGO_MNEMONIC", ""), network=network)
+    
+    # Load config from .env (mnemonic not required for verification)
+    config = AlgoConfig(
+        algod_url=algod_url,
+        indexer_url=indexer_url,
+        network=network,
+        mnemonic="",  # Not required for verification
+    )
+    
+    try:
+        config.validate(require_mnemonic=False)
+    except ValueError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        sys.exit(1)
+    
+    client = CompliLedgerClient(
+        algod_url=config.algod_url,
+        algod_token=config.algod_token,
+        sender_mnemonic="",  # Not needed for verify
+        network=config.network,
+        indexer_url=config.indexer_url,
+        indexer_token=config.indexer_token,
+    )
+    
     ok = client.verify_verdict(v, txid)
     console.print("[green]VALID[/green]" if ok else "[red]INVALID[/red]")
     if not ok:

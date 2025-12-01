@@ -1,0 +1,2 @@
+# This directory stores generated verdict JSON files from example scripts
+# The directory is kept in git, but the JSON files are gitignored

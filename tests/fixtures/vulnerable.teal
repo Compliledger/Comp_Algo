@@ -1,0 +1,70 @@
+#pragma version 8
+// Vulnerable TEAL contract for testing rule detection
+// Contains multiple P0 violations
+
+// Check if this is app creation
+txn ApplicationID
+int 0
+==
+bnz creation
+
+// Check transaction type
+txn OnCompletion
+int DeleteApplication  // 5
+==
+bnz handle_delete
+
+txn OnCompletion
+int UpdateApplication  // 4
+==
+bnz handle_update
+
+txn OnCompletion
+int NoOp
+==
+bnz handle_call
+
+// Default reject
+int 0
+return
+
+creation:
+    // Create app - store owner
+    byte "owner"
+    txn Sender
+    app_global_put
+    int 1
+    return
+
+handle_delete:
+    // VIOLATION: DELETE_WITHOUT_ADMIN_CHECK
+    // No sender check before deleting global state
+    byte "owner"
+    app_global_del
+    // VIOLATION: REKEY_NOT_ZERO - no RekeyTo check
+    // VIOLATION: CLOSEREMAINDER_NOT_ZERO - no CloseRemainderTo check
+    int 1
+    return
+
+handle_update:
+    // VIOLATION: UPDATE_WITHOUT_ADMIN_CHECK
+    // No admin verification
+    byte "version"
+    txna ApplicationArgs 0
+    app_global_put
+    // VIOLATION: MISSING_ARG_VALIDATION - using args without validation
+    // VIOLATION: REKEY_NOT_ZERO
+    int 1
+    return
+
+handle_call:
+    // VIOLATION: STATE_MUTATION_UNGUARDED
+    // No sender check before mutating state
+    byte "balance"
+    txna ApplicationArgs 0
+    btoi
+    app_global_put
+    // VIOLATION: MISSING_ARG_VALIDATION
+    // VIOLATION: REKEY_NOT_ZERO
+    int 1
+    return
