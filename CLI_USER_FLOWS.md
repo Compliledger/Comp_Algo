@@ -210,13 +210,17 @@ compalgo list-policies
 **Output**:
 ```
 Available policies:
-- aleo-baseline
-- algorand-baseline
-- pci-dss-algorand
-- pci-dss-basic
-- pci-dss-standard
-- pci-secure-software
-- pci-tokenization
+- algorand-baseline      (Algorand-specific PyTeal/TEAL rules) ⭐
+- security-baseline      (General security patterns) ⭐
+- pci-dss-algorand      (PCI-DSS subset for Algorand)
+- pci-dss-basic         (Essential PCI-DSS v4.0)
+- pci-dss-standard      (Comprehensive PCI-DSS v4.0)
+- pci-secure-software   (PCI Secure Software Standard)
+- pci-tokenization      (PCI Tokenization/TSP)
+- aleo-baseline         (Cross-chain reference)
+- controls_catalog      (Controls reference)
+
+⭐ = Recommended for most Algorand projects
 ```
 
 ### Step 2: Test Against Different Policies

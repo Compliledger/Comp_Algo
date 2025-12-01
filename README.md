@@ -226,17 +226,19 @@ compalgo verify --verdict verdict.json --txid TXID  # Verify proof
 
 ### Available Policy Packs
 
-Run `compalgo list-policies` to see all 8 available policy packs:
+Run `compalgo list-policies` to see all 9 available policy packs:
 
 | Policy Pack | Rules | Threshold | Target |
 |-------------|-------|-----------|--------|
-| **algorand-baseline** | 9 | 80 | General Algorand contracts |
+| **algorand-baseline** ⭐ | 9 | 80 | Algorand-specific (PyTeal/TEAL) |
+| **security-baseline** ⭐ | 10 | 75 | General security patterns (all chains) |
+| **pci-dss-algorand** | 3 | 80 | Algorand payment subset |
 | **pci-dss-basic** | 7 | 85 | Payment/DeFi (essential) |
 | **pci-dss-standard** | 15 | 90 | Payment/DeFi (comprehensive) |
 | **pci-secure-software** | 7 | 90 | Software vendors |
 | **pci-tokenization** | 4 | 90 | Token service providers |
-| **aleo-baseline** | 10 | 75 | General security patterns |
-| **pci-dss-algorand** | 3 | 80 | Algorand payment subset |
+
+⭐ = Recommended for most Algorand projects
 
 ---
 
