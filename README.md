@@ -27,7 +27,6 @@ Create cryptographically verifiable compliance verdicts and anchor them immutabl
 - **[CLI User Flows & Examples](CLI_USER_FLOWS.md)** - Complete guide with step-by-step workflows
 - **[Security Rules Reference](SECURITY_RULES.md)** - All P0 rules and detection logic
 - **[Quick Start Guide](QUICKSTART.md)** - Get started in 5 minutes
-- **[10-Day Development Plan](DEV_10_DAY_PLAN.md)** - Roadmap and architecture
 
 ---
 
