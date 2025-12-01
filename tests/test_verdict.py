@@ -2,7 +2,7 @@
 Tests for ComplianceVerdict schema and hashing
 """
 import json
-from compliledger_algorand.core.verdict import ComplianceVerdict, verdict_hash, build_verdict
+from compalgo.core.verdict import ComplianceVerdict, verdict_hash, build_verdict
 
 
 def test_verdict_canonical_json():

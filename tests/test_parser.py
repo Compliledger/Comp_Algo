@@ -1,8 +1,8 @@
 """
 Tests for PyTeal and TEAL parsers
 """
-from compliledger_algorand.analyzer.parser import PyTealParser
-from compliledger_algorand.analyzer.teal_parser import parse_teal_signals
+from compalgo.analyzer.parser import PyTealParser
+from compalgo.analyzer.teal_parser import parse_teal_signals
 
 
 def test_pyteal_parser_extract_signals():

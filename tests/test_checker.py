@@ -3,7 +3,7 @@ Tests for ComplianceChecker and rule engine
 """
 import os
 from pathlib import Path
-from compliledger_algorand.analyzer.checker import ComplianceChecker
+from compalgo.analyzer.checker import ComplianceChecker
 
 
 def test_checker_detects_violations():

@@ -15,12 +15,12 @@ import json
 # Set up environment
 os.environ.setdefault("ALGORAND_API_URL", "https://testnet-api.algonode.cloud")
 
-from compliledger_algorand.analyzer.checker import ComplianceChecker
-from compliledger_algorand.core.verdict import build_verdict
-from compliledger_algorand.client import CompliLedgerClient
+from compalgo.analyzer.checker import ComplianceChecker
+from compalgo.core.verdict import build_verdict
+from compalgo.client import CompliLedgerClient
 
 print("=" * 70)
-print("CompliLedger Algorand SDK - P0 Demo")
+print("CompALGO - Algorand Smart Contract Compliance Analyzer")
 print("=" * 70)
 
 # Step 1: Scan the vulnerable contract

@@ -1,0 +1,84 @@
+{
+  "name": "PCI Tokenization Policy",
+  "version": "1.0.0",
+  "description": "Map Comp-LEO checks to PCI Tokenization-related controls across Secure Software and TSP standards",
+  "framework": "PCI Token Service Provider (TSP)",
+  "target": "payment",
+  "threshold": 90,
+  "fail_on_critical": true,
+  "rules": [
+    {
+      "id": "forbidden-data-storage",
+      "name": "TSP - No Sensitive Authentication Data Storage",
+      "description": "Detect forbidden storage (CVV, PIN, track data) per TSP Requirements",
+      "severity": "critical",
+      "violation_type": "data_privacy",
+      "enabled": true,
+      "pci_requirement": "TSP Tokenization Requirements",
+      "controls": [
+        "TOKEN-03-01",
+        "TOKEN-03-02",
+        "TOKEN-03-03",
+        "TOKEN-03-04",
+        "TOKEN-03-05"
+      ],
+      "references": []
+    },
+    {
+      "id": "weak-crypto-algorithm",
+      "name": "TSP - Cryptography & Key Management",
+      "description": "Validate strong cryptography and key protection for tokenization per TSP Requirements",
+      "severity": "critical",
+      "violation_type": "crypto_compliance",
+      "enabled": true,
+      "pci_requirement": "TSP Crypto Requirements",
+      "controls": [
+        "TOKEN-06-01",
+        "TOKEN-06-02",
+        "TOKEN-06-03",
+        "TOKEN-06-04",
+        "TOKEN-06-05"
+      ],
+      "references": []
+    },
+    {
+      "id": "logging-insufficient",
+      "name": "TSP - Comprehensive Audit Logging",
+      "description": "Audit logging for all tokenization operations per TSP Monitoring Requirements",
+      "severity": "high",
+      "violation_type": "logging_audit",
+      "enabled": true,
+      "pci_requirement": "TSP Monitoring Requirements",
+      "controls": [
+        "TOKEN-07-01",
+        "TOKEN-07-02",
+        "TOKEN-07-03",
+        "TOKEN-07-04",
+        "TOKEN-07-05"
+      ],
+      "references": []
+    },
+    {
+      "id": "input-validation-missing",
+      "name": "TSP - Token Input Validation",
+      "description": "Validate all tokenization inputs per TSP Security Requirements",
+      "severity": "high",
+      "violation_type": "input_validation",
+      "enabled": true,
+      "pci_requirement": "TSP Security Requirements",
+      "controls": ["TOKEN-03-01", "TOKEN-03-02"],
+      "references": []
+    }
+  ],
+  "metadata": {
+    "applicable_to": [
+      "Token Service Providers",
+      "Payment processors",
+      "DeFi tokenized asset platforms"
+    ],
+    "compliance_scope": "PCI Tokenization and TSP Requirements",
+    "certification_level": "Informal mapping",
+    "last_updated": "2025-01-30",
+    "author": "CompliLedger"
+  }
+}

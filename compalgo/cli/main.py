@@ -30,14 +30,16 @@ def _save_text(path: str, content: str) -> None:
 
 @click.group()
 def cli():
-    """CompliLedger Algorand SDK CLI (P0)
+    """CompALGO - Algorand Smart Contract Compliance Analyzer
+
+    Static analysis + on-chain proof anchoring for PyTeal/TEAL contracts.
 
     Commands:
-      - check:    scan PyTeal/TEAL and print violations & score
-      - report:   export report (json/html/markdown)
-      - list-policies
-      - anchor:   anchor a Compliance Verdict JSON on Algorand
-      - verify:   verify a verdict against a TXID
+      - check:         scan PyTeal/TEAL and print violations & score
+      - report:        export report (json/html/markdown)
+      - list-policies: show available policy packs
+      - anchor:        anchor a Compliance Verdict JSON on Algorand
+      - verify:        verify a verdict against a TXID
     """
 
 

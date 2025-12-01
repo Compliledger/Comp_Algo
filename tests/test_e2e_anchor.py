@@ -7,8 +7,8 @@ Requires:
 """
 import os
 import sys
-from compliledger_algorand.core.verdict import ComplianceVerdict, build_verdict
-from compliledger_algorand.client import CompliLedgerClient
+from compalgo.core.verdict import ComplianceVerdict, build_verdict
+from compalgo.client import CompliLedgerClient
 
 
 def test_e2e_anchor_and_verify():

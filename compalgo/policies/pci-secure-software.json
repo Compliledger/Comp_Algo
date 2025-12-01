@@ -1,0 +1,99 @@
+{
+  "name": "PCI Secure Software Standard",
+  "version": "1.0.0",
+  "description": "Policy pack mapping Comp-LEO checks to PCI Secure Software Standard (v1.2.1)",
+  "framework": "PCI Secure Software Standard",
+  "target": "payment",
+  "threshold": 90,
+  "fail_on_critical": true,
+  "rules": [
+    {
+      "id": "input-validation-missing",
+      "name": "Software Security - Input Validation (SECURE REQ-1.x, REQ-8.x)",
+      "description": "Validate all inputs to prevent injection and overflow attacks per PCI Secure Software Standard",
+      "severity": "high",
+      "violation_type": "input_validation",
+      "enabled": true,
+      "pci_requirement": "SECURE REQ-1.x & REQ-8.x",
+      "controls": ["SECURE-01-01", "SECURE-01-02", "SECURE-08-01", "SECURE-08-02"],
+      "references": []
+    },
+    {
+      "id": "logging-insufficient",
+      "name": "Monitoring & Attestation - Audit Logging (SECURE REQ-7.x)",
+      "description": "Implement comprehensive audit trails per PCI Secure Software Standard",
+      "severity": "medium",
+      "violation_type": "logging_audit",
+      "enabled": true,
+      "pci_requirement": "SECURE REQ-7.x",
+      "controls": ["SECURE-07-01", "SECURE-07-02", "SECURE-07-03", "SECURE-07-04"],
+      "references": []
+    },
+    {
+      "id": "forbidden-data-storage",
+      "name": "Data Protection - No Sensitive Data Storage (SECURE REQ-9.x)",
+      "description": "Never store sensitive authentication data per PCI Secure Software Standard",
+      "severity": "critical",
+      "violation_type": "data_privacy",
+      "enabled": true,
+      "pci_requirement": "SECURE REQ-9.x",
+      "controls": ["SECURE-09-01", "SECURE-09-02", "SECURE-09-03"],
+      "references": []
+    },
+    {
+      "id": "weak-crypto-algorithm",
+      "name": "Cryptography & Key Management (SECURE REQ-6.x)",
+      "description": "Ensure strong cryptographic algorithms per PCI Secure Software Standard",
+      "severity": "critical",
+      "violation_type": "crypto_compliance",
+      "enabled": true,
+      "pci_requirement": "SECURE REQ-6.x",
+      "controls": ["SECURE-06-01", "SECURE-06-02", "SECURE-06-03", "SECURE-06-04", "SECURE-06-05"],
+      "references": []
+    },
+    {
+      "id": "state-mutation-unprotected",
+      "name": "Secure Software Lifecycle - Access Control (SECURE REQ-2.x)",
+      "description": "Restrict access to critical functions per PCI Secure Software Standard",
+      "severity": "critical",
+      "violation_type": "access_control",
+      "enabled": true,
+      "pci_requirement": "SECURE REQ-2.x",
+      "controls": ["SECURE-02-01", "SECURE-02-02"],
+      "references": []
+    },
+    {
+      "id": "reentrancy-vulnerability",
+      "name": "Vulnerability Management - Reentrancy (SECURE REQ-10.x)",
+      "description": "Detect reentrancy vulnerabilities per PCI Secure Software Standard",
+      "severity": "high",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "SECURE REQ-10.x",
+      "controls": ["SECURE-10-01", "SECURE-10-02", "SECURE-10-03"],
+      "references": []
+    },
+    {
+      "id": "integer-overflow-risk",
+      "name": "Vulnerability Management - Overflow Protection (SECURE REQ-10.x)",
+      "description": "Detect integer overflow risks per PCI Secure Software Standard",
+      "severity": "high",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "SECURE REQ-10.x",
+      "controls": ["SECURE-10-02", "SECURE-10-04"],
+      "references": []
+    }
+  ],
+  "metadata": {
+    "applicable_to": [
+      "Software vendors",
+      "Solution providers",
+      "Merchants"
+    ],
+    "compliance_scope": "PCI Secure Software Standard (v1.2.1)",
+    "certification_level": "Informal mapping",
+    "last_updated": "2025-01-30",
+    "author": "CompliLedger"
+  }
+}

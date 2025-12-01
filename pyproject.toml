@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "compliledger-algorand"
-version = "0.1.0a0"
-description = "CompliLedger SDK for Algorand: static analysis + on-chain compliance verdict anchoring"
+name = "compalgo"
+version = "0.1.0"
+description = "CompALGO SDK: Algorand smart contract compliance analysis + on-chain proof anchoring"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -33,10 +33,10 @@ interactive = ["questionary>=2.0.0"]
 watch = ["watchdog>=3.0.0"]
 
 [project.scripts]
-compliledger = "compliledger_algorand.cli.main:cli"
+compalgo = "compalgo.cli.main:cli"
 
 [tool.hatch.build.targets.wheel]
-packages = ["compliledger_algorand"]
+packages = ["compalgo"]
 
 [tool.black]
 line-length = 100

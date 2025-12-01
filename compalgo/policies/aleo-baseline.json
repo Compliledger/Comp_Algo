@@ -1,0 +1,225 @@
+{
+  "id": "aleo-baseline",
+  "name": "Aleo Baseline Security & Best Practices",
+  "description": "Core security and best practice rules for Leo smart contracts on Aleo",
+  "version": "1.0.0",
+  "frameworks": ["Aleo", "General Security"],
+  "enabled_rules": [],
+  "fail_threshold": 75,
+  "rules": [
+    {
+      "id": "input-validation-missing",
+      "name": "Missing Input Validation",
+      "description": "Transitions accepting parameters must validate inputs to prevent invalid state",
+      "severity": "high",
+      "violation_type": "input_validation",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "SI-10",
+          "control_name": "Information Input Validation",
+          "description": "Check the validity of information inputs"
+        },
+        {
+          "framework": "ISO-27001",
+          "control_id": "A.14.1.2",
+          "control_name": "Securing Application Services",
+          "description": "Information involved in application services shall be validated"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "state-mutation-unprotected",
+      "name": "Unprotected State Mutation",
+      "description": "State modifications must include access control checks to prevent unauthorized changes",
+      "severity": "critical",
+      "violation_type": "access_control",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "AC-3",
+          "control_name": "Access Enforcement",
+          "description": "Enforce approved authorizations for logical access"
+        },
+        {
+          "framework": "ISO-27001",
+          "control_id": "A.9.4.1",
+          "control_name": "Information Access Restriction",
+          "description": "Access to information and application system functions shall be restricted"
+        },
+        {
+          "framework": "PCI-DSS",
+          "control_id": "7.1",
+          "control_name": "Limit Access",
+          "description": "Limit access to system components and cardholder data"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "logging-insufficient",
+      "name": "Insufficient Audit Logging",
+      "description": "Critical operations must generate audit trails for compliance and incident response",
+      "severity": "medium",
+      "violation_type": "logging_audit",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "AU-2",
+          "control_name": "Audit Events",
+          "description": "Identify the types of events that the system is capable of logging"
+        },
+        {
+          "framework": "ISO-27001",
+          "control_id": "A.12.4.1",
+          "control_name": "Event Logging",
+          "description": "Event logs recording activities, exceptions, and security events shall be produced"
+        },
+        {
+          "framework": "PCI-DSS",
+          "control_id": "10.1",
+          "control_name": "Audit Trail",
+          "description": "Implement audit trails to link access to system components"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "integer-overflow-risk",
+      "name": "Integer Overflow Risk",
+      "description": "Arithmetic operations on unsigned integers must include overflow/underflow protection",
+      "severity": "high",
+      "violation_type": "security",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "SI-16",
+          "control_name": "Memory Protection",
+          "description": "Implement safeguards to protect system memory"
+        },
+        {
+          "framework": "ISO-27001",
+          "control_id": "A.14.1.2",
+          "control_name": "Securing Application Services",
+          "description": "Information involved in application services shall be validated"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "private-data-exposure",
+      "name": "Private Data Exposure Risk",
+      "description": "Sensitive data must not be exposed through public fields or transitions",
+      "severity": "high",
+      "violation_type": "data_privacy",
+      "controls": [
+        {
+          "framework": "GDPR",
+          "control_id": "Article 5(1)(f)",
+          "control_name": "Integrity and Confidentiality",
+          "description": "Personal data processed in a manner that ensures appropriate security"
+        },
+        {
+          "framework": "NIST-800-53",
+          "control_id": "SC-4",
+          "control_name": "Information in Shared System Resources",
+          "description": "Prevent unauthorized information transfer via shared resources"
+        },
+        {
+          "framework": "PCI-DSS",
+          "control_id": "3.4",
+          "control_name": "Render PAN Unreadable",
+          "description": "Render primary account number unreadable anywhere it is stored"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "reentrancy-vulnerability",
+      "name": "Reentrancy Vulnerability",
+      "description": "State changes before external calls to prevent reentrancy attacks",
+      "severity": "critical",
+      "violation_type": "security",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "SI-2",
+          "control_name": "Flaw Remediation",
+          "description": "Identify, report, and correct system flaws"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "mapping-key-collision",
+      "name": "Mapping Key Collision Risk",
+      "description": "Mapping keys should use sufficient entropy to prevent collisions",
+      "severity": "medium",
+      "violation_type": "best_practice",
+      "controls": [
+        {
+          "framework": "ISO-27001",
+          "control_id": "A.14.1.3",
+          "control_name": "Protecting Application Services Transactions",
+          "description": "Information involved in application service transactions shall be protected"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "unchecked-return-values",
+      "name": "Unchecked Return Values",
+      "description": "Return values from critical operations must be checked",
+      "severity": "medium",
+      "violation_type": "security",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "SI-11",
+          "control_name": "Error Handling",
+          "description": "Generate error messages and take corrective actions"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "hardcoded-credentials",
+      "name": "Hardcoded Credentials",
+      "description": "Credentials and secrets must not be hardcoded in source code",
+      "severity": "critical",
+      "violation_type": "crypto_compliance",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "IA-5",
+          "control_name": "Authenticator Management",
+          "description": "Manage system authenticators"
+        },
+        {
+          "framework": "PCI-DSS",
+          "control_id": "8.2.1",
+          "control_name": "Strong Cryptography",
+          "description": "Use strong cryptography to render authentication credentials unreadable"
+        }
+      ],
+      "enabled": false
+    },
+    {
+      "id": "weak-randomness",
+      "name": "Weak Randomness Source",
+      "description": "Use cryptographically secure randomness for security-critical operations",
+      "severity": "high",
+      "violation_type": "crypto_compliance",
+      "controls": [
+        {
+          "framework": "NIST-800-53",
+          "control_id": "SC-13",
+          "control_name": "Cryptographic Protection",
+          "description": "Implement FIPS-validated cryptography"
+        }
+      ],
+      "enabled": false
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "name": "PCI-DSS Standard",
+  "version": "1.0.0",
+  "description": "Comprehensive PCI-DSS v4.0 compliance checks for production Aleo payment and DeFi contracts",
+  "framework": "PCI-DSS",
+  "target": "payment",
+  "threshold": 90,
+  "fail_on_critical": true,
+  "rules": [
+    {
+      "id": "pci-2.2-secure-configuration",
+      "name": "Secure Configuration Standards",
+      "description": "Ensure secure configuration with no default credentials or test modes",
+      "severity": "high",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "2.2.1",
+      "controls": ["2.2.1", "2.2.2", "2.2.4"],
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=95"
+      ]
+    },
+    {
+      "id": "pci-3.2-forbidden-data",
+      "name": "No Sensitive Authentication Data Storage",
+      "description": "Never store CVV, PIN, or full magnetic stripe data after authorization",
+      "severity": "critical",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "3.2",
+      "controls": ["3.2.1", "3.2.2", "3.2.3"],
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=122"
+      ]
+    },
+    {
+      "id": "pci-3.4-cardholder-data-protection",
+      "name": "Cardholder Data Must Be Private",
+      "description": "All cardholder data must use private visibility to render PAN unreadable",
+      "severity": "critical",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "3.4",
+      "controls": ["3.4.1", "3.4.2"],
+      "cwe": "CWE-312",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=124"
+      ]
+    },
+    {
+      "id": "pci-3.5-private-key-protection",
+      "name": "Cryptographic Key Protection",
+      "description": "No private keys, view keys, or seed phrases in source code",
+      "severity": "critical",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "3.5.1",
+      "controls": ["3.5.1", "3.5.2"],
+      "cwe": "CWE-798",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=128"
+      ]
+    },
+    {
+      "id": "pci-4.1-strong-cryptography",
+      "name": "Use Strong Cryptography",
+      "description": "Use strong cryptographic algorithms (no MD5, SHA-1, DES, RC4)",
+      "severity": "high",
+      "violation_type": "crypto_compliance",
+      "enabled": true,
+      "pci_requirement": "4.1",
+      "controls": ["4.1.1", "4.1.2"],
+      "cwe": "CWE-327",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=140"
+      ]
+    },
+    {
+      "id": "pci-6.5.1-payment-input-validation",
+      "name": "Payment Input Validation",
+      "description": "Validate all payment amounts and parameters to prevent injection attacks",
+      "severity": "high",
+      "violation_type": "input_validation",
+      "enabled": true,
+      "pci_requirement": "6.5.1",
+      "controls": ["6.5.1"],
+      "cwe": "CWE-20",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=158"
+      ]
+    },
+    {
+      "id": "pci-6.5.3-insecure-cryptographic-storage",
+      "name": "Secure Cryptographic Storage",
+      "description": "Avoid weak randomness and predictable IDs/nonces",
+      "severity": "high",
+      "violation_type": "crypto_compliance",
+      "enabled": true,
+      "pci_requirement": "6.5.3",
+      "controls": ["6.5.3"],
+      "cwe": "CWE-338",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=159"
+      ]
+    },
+    {
+      "id": "pci-7.1-payment-access-control",
+      "name": "Restrict Payment Function Access",
+      "description": "Limit access to payment functions by verifying caller authorization",
+      "severity": "critical",
+      "violation_type": "access_control",
+      "enabled": true,
+      "pci_requirement": "7.1",
+      "controls": ["7.1.1", "7.1.2"],
+      "cwe": "CWE-862",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=170"
+      ]
+    },
+    {
+      "id": "pci-8.2-multi-signature-auth",
+      "name": "Multi-Signature Authentication",
+      "description": "Require multi-signature for admin and high-value functions",
+      "severity": "critical",
+      "violation_type": "access_control",
+      "enabled": true,
+      "pci_requirement": "8.2",
+      "controls": ["8.2.1", "8.2.3"],
+      "cwe": "CWE-306",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=185"
+      ]
+    },
+    {
+      "id": "pci-10.2-payment-audit-logging",
+      "name": "Audit Trail for Payment Transactions",
+      "description": "Implement automated audit trails for all payment actions",
+      "severity": "high",
+      "violation_type": "logging_audit",
+      "enabled": true,
+      "pci_requirement": "10.2",
+      "controls": ["10.2.1", "10.2.2"],
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=220"
+      ]
+    },
+    {
+      "id": "pci-10.3-detailed-audit-logging",
+      "name": "Detailed Audit Log Fields",
+      "description": "Include who, what, when, where, how in all audit logs",
+      "severity": "medium",
+      "violation_type": "logging_audit",
+      "enabled": true,
+      "pci_requirement": "10.3",
+      "controls": ["10.3.1", "10.3.3"],
+      "cwe": "CWE-778",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=221"
+      ]
+    },
+    {
+      "id": "pci-11.2-vulnerability-detection",
+      "name": "Common Vulnerability Detection",
+      "description": "Detect reentrancy, integer overflow, unchecked calls, and other vulnerabilities",
+      "severity": "high",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "11.2",
+      "controls": ["11.2.1", "11.2.2", "11.2.3"],
+      "cwe": "CWE-841",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=233"
+      ]
+    },
+    {
+      "id": "pci-11.3.4-transaction-limits",
+      "name": "Transaction Limits for Anomaly Detection",
+      "description": "Define maximum transaction amounts to detect and prevent fraud",
+      "severity": "medium",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "11.3.4",
+      "controls": ["11.3.4"],
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=235"
+      ]
+    },
+    {
+      "id": "pci-12.3-rate-limiting",
+      "name": "Rate Limiting on Payment Functions",
+      "description": "Implement rate limiting to prevent abuse of payment functions",
+      "severity": "medium",
+      "violation_type": "security",
+      "enabled": true,
+      "pci_requirement": "12.3.5",
+      "controls": ["12.3.5"],
+      "cwe": "CWE-770",
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=264"
+      ]
+    },
+    {
+      "id": "pci-12.10.6-refund-mechanism",
+      "name": "Refund/Reversal Capability",
+      "description": "Implement ability to refund or reverse fraudulent transactions",
+      "severity": "medium",
+      "violation_type": "best_practice",
+      "enabled": true,
+      "pci_requirement": "12.10.6",
+      "controls": ["12.10.6"],
+      "references": [
+        "https://docs-prv.pcisecuritystandards.org/PCI%20DSS/Standard/PCI-DSS-v4_0.pdf#page=278"
+      ]
+    }
+  ],
+  "metadata": {
+    "applicable_to": [
+      "Production DeFi protocols",
+      "Payment processors",
+      "Token swap contracts",
+      "Marketplace contracts",
+      "Staking/reward contracts",
+      "Lending platforms",
+      "Cross-chain bridges handling payments"
+    ],
+    "compliance_scope": "Standard PCI-DSS requirements for blockchain payment systems",
+    "certification_level": "Informal - not for official PCI certification",
+    "coverage": "15 rules covering 9 of 12 main PCI-DSS requirements (~75% coverage)",
+    "recommended_for": "Production applications handling real payments",
+    "last_updated": "2025-01-30",
+    "author": "CompliLedger",
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2025-01-30",
+        "changes": [
+          "Added 8 new rules for comprehensive coverage",
+          "Includes secure configuration checks",
+          "Adds cryptographic key protection",
+          "Implements strong cryptography validation",
+          "Adds multi-signature requirements",
+          "Enhanced audit logging checks",
+          "Vulnerability detection included",
+          "Rate limiting verification",
+          "Blockchain-specific security patterns"
+        ]
+      }
+    ],
+    "migration_from_basic": {
+      "breaking_changes": false,
+      "new_rules": 8,
+      "stricter_threshold": "90 vs 85",
+      "backwards_compatible": true,
+      "recommendation": "Test with --dry-run first"
+    }
+  }
+}
